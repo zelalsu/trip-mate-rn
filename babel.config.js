@@ -23,6 +23,7 @@ module.exports = {
           '@theme': './src/theme',
           '@utils': './src/utils',
           '@screens': './src/screens',
+          '@constants': './src/constants',
         },
       },
     ],
