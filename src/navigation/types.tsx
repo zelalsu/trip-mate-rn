@@ -21,11 +21,16 @@ export type TabStackParams = {
   MainNavigator: NavigatorScreenParams<MainStackParams>;
   PublishScreen: undefined;
   TravelsScreen: undefined;
-  MessageScreen: undefined;
+  MessageNavigator: NavigatorScreenParams<MessageStackParams>;
 };
 
 export type MainStackParams = {
   SearchScreen: undefined;
+};
+
+export type MessageStackParams = {
+  MessageScreen: undefined;
+  ChatScreen: undefined;
 };
 
 export type DrawerStackParams = {

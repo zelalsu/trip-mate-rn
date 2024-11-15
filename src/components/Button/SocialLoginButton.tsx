@@ -8,28 +8,33 @@ import BlackAppleIcon from '@assets/svg/blackApple.svg';
 
 import {StyleSheet} from 'react-native';
 import {Colors} from '@constants/colors';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
 const SocialLoginButton = ({style}: any) => {
-  async function handleGoogleSignIn() {
-    // GoogleSignin.configure({
-    //   iosClientId:
-    //     '28063342004-8re4ro7qtk6sb5h84qut5evd1tj508jk.apps.googleusercontent.com',
-    //   scopes: ['profile', 'email'],
-    // });
-    // try {
-    //   await GoogleSignin.hasPlayServices();
-    //   const userInfo = await GoogleSignin.signIn();
-    //   const access_token = await GoogleSignin.getTokens();
-    //   socialLogin({
-    //     provider: 'google',
-    //     email: userInfo.data.user.email,
-    //     name: userInfo.data.user.givenName + userInfo.data.user.familyName,
-    //     access_token: access_token.accessToken,
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-  }
+  const googleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const {idToken} = await GoogleSignin.signIn();
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      auth().signInWithCredential(googleCredential);
+    } catch (error) {
+      console.warn(JSON.stringify(error));
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.warn(error);
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.warn(error);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.warn(error);
+      } else {
+        console.warn(error);
+      }
+    }
+  };
 
   //   React.useEffect(() => {
   //     if (isSuccess) {
@@ -48,7 +53,7 @@ const SocialLoginButton = ({style}: any) => {
     <>
       <View style={styles.iconContainer}>
         <TouchableOpacity
-          onPress={handleGoogleSignIn}
+          onPress={googleLogin}
           style={[styles.iconWrapper, style]}>
           <GoogleIcon width={22} height={22} />
         </TouchableOpacity>

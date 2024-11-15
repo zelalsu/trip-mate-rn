@@ -18,27 +18,28 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {formatDate, enforceDateFormat, validateDate} from '@utils/DateUtils'; // Importing utility functions
 import firestore from '@react-native-firebase/firestore';
+import CustomBackButton from '@components/Button/CustomBackButton';
 
 const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('tl@gmail.com');
+  const [password, setPassword] = useState('12345678');
   const [birthDate, setBirthDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [manualDate, setManualDate] = useState(''); // Store manually entered date
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [manualDate, setManualDate] = useState('');
+  const [name, setName] = useState('zelalsu');
+  const [phoneNumber, setPhoneNumber] = useState('05469808786');
+
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || birthDate;
     setShowPicker(Platform.OS === 'ios' ? true : false);
     setBirthDate(currentDate);
-    setManualDate(formatDate(currentDate)); // Update manual date when picker value changes
+    setManualDate(formatDate(currentDate));
   };
 
   const handleManualDateChange = (text: string) => {
-    setManualDate(enforceDateFormat(text)); // Format the manual date input
+    setManualDate(enforceDateFormat(text));
   };
 
-  // Register function
   const register = () => {
     if (!validateDate(manualDate)) {
       Alert.alert(
@@ -53,15 +54,14 @@ const RegisterScreen = () => {
       .then(userCredential => {
         const user = userCredential.user;
 
-        // Store additional user data in Firestore
         firestore()
-          .collection('users') // 'users' collection
-          .doc(user.uid) // Use the UID of the authenticated user
+          .collection('users')
+          .doc(user.uid)
           .set({
-            name: name, // Assuming 'name' is stored somewhere in your state
-            phoneNumber: phoneNumber, // Assuming phone number is stored in state
+            name: name,
+            phoneNumber: phoneNumber,
             email: email,
-            birthDate: firestore.Timestamp.fromDate(birthDate), // Veya formatlanmış tarih
+            birthDate: firestore.Timestamp.fromDate(birthDate),
           })
           .then(() => {
             Alert.alert('User account created & signed in!');
@@ -89,6 +89,7 @@ const RegisterScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={styles.safeArea}>
           <ScrollView contentContainerStyle={styles.container}>
+            <CustomBackButton />
             <Text style={styles.welcomeText}>Welcome onboard!</Text>
             <Text style={styles.subText}>
               Please fill in your details to create a new account.
@@ -118,20 +119,17 @@ const RegisterScreen = () => {
               onChangeText={setPassword}
               secureTextEntry
             />
-
             <CustomInput
               label="Birth Date"
               placeholder="DD-MM-YYYY"
               value={manualDate}
               onChangeText={handleManualDateChange}
             />
-
             <TouchableOpacity
               onPress={() => setShowPicker(true)}
               style={styles.button}>
               <Text style={styles.text}>Select Birth Date</Text>
             </TouchableOpacity>
-
             {showPicker && (
               <RNDateTimePicker
                 testID="dateTimePicker"
@@ -141,7 +139,6 @@ const RegisterScreen = () => {
                 onChange={handleDateChange}
               />
             )}
-
             <CustomButton onPress={register} label={'SIGN UP'} />
           </ScrollView>
         </SafeAreaView>
@@ -155,11 +152,11 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: 'white',
   },
   container: {
     padding: 20,
     flexGrow: 1,
-    alignItems: 'center',
   },
   welcomeText: {
     color: Colors.darkBlue,
@@ -175,14 +172,13 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginTop: 50,
   },
-
   button: {
-    alignSelf: 'flex-end', // This aligns the TouchableOpacity to the right
+    alignSelf: 'flex-end',
   },
   text: {
     fontSize: 12,
     fontStyle: 'italic',
     color: Colors.darkBlue,
-    textAlign: 'right', // This aligns the text to the right inside the TouchableOpacity
+    textAlign: 'right',
   },
 });
