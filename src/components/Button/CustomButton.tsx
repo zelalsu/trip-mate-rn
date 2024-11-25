@@ -5,18 +5,24 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  ViewStyle,
+  TextStyle,
+  GestureResponderEvent,
 } from 'react-native';
 import {Colors} from '@constants/colors';
 
 interface CustomButtonProps {
   label: string;
-  onPress: () => void;
+  onPress: (event: GestureResponderEvent) => void; // Event tipini belirttik
+  style?: ViewStyle | TextStyle; // style opsiyonel, ve ViewStyle/TextStyle'ı kabul eder
 }
 
-const CustomButton = ({label, onPress}: CustomButtonProps) => {
+const CustomButton = ({label, onPress, style}: CustomButtonProps) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
+      <TouchableOpacity
+        onPress={onPress}
+        style={[styles.buttonContainer, style]}>
         <Text style={styles.label}>{label}</Text>
       </TouchableOpacity>
     </View>

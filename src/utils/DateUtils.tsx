@@ -26,3 +26,25 @@ export const validateDate = (date: string) => {
   const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
   return datePattern.test(date);
 };
+
+// In @utils/DateUtils.ts
+export const formatDateInTurkish = (date: Date) => {
+  const day = date.getDate();
+  const monthNames = [
+    'Ocak',
+    'Şubat',
+    'Mart',
+    'Nisan',
+    'Mayıs',
+    'Haziran',
+    'Temmuz',
+    'Ağustos',
+    'Eylül',
+    'Ekim',
+    'Kasım',
+    'Aralık',
+  ];
+  const month = monthNames[date.getMonth()]; // Get Turkish month name
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`; // Format: "8 Kasım 2024"
+};
