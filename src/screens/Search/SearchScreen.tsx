@@ -11,7 +11,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import CountUser from '@components/Modal/CountUser';
 import window from '@constants/dimension';
 
-const SearchScreen = () => {
+const SearchScreen = ({navigation}) => {
   const [departure, setDeparture] = useState('');
   const [arrival, setArrival] = useState('');
   const [user, setUser] = useState(1);
@@ -48,6 +48,7 @@ const SearchScreen = () => {
 
   const searchTravel = () => {
     // Arama işlemi burada yapılacak
+    navigation.navigate('TravelScreen');
   };
 
   const getLocations = useCallback((query: string | number | boolean) => {
@@ -167,7 +168,9 @@ const SearchScreen = () => {
           }}>
           <CountUser value={user} setValue={setUser} />
         </RBSheet>
-        <Button title="dkf" onPress={signOut} />
+        <View style={{marginTop: 20}}>
+          <Button title="Çıkış Yap" onPress={signOut} />
+        </View>
       </View>
     </View>
   );

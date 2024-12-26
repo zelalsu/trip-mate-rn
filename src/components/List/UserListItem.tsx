@@ -1,6 +1,5 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type UserListItemProps = {
   id: string;

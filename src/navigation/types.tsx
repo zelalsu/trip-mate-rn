@@ -26,6 +26,7 @@ export type TabStackParams = {
 
 export type MainStackParams = {
   SearchScreen: undefined;
+  TravelScreen: undefined;
 };
 
 export type MessageStackParams = {

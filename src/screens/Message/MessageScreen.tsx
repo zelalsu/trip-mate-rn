@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, Alert, StyleSheet} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import UserListItem from '@components/User/UserListItem';
+import UserListItem from '@components/List/UserListItem';
 
 type User = {
   id: string;

@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  Dimensions,
   ViewStyle,
   TextStyle,
   GestureResponderEvent,
@@ -33,14 +32,11 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
-    position: 'relative',
-    padding: 20,
+    width: '100%',
   },
   buttonContainer: {
-    width: Dimensions.get('window').width - 30,
     backgroundColor: Colors.darkBlue,
     paddingVertical: 15,
     borderRadius: 5,
