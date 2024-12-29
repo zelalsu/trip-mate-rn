@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import TextInput from 'react-native-text-input-interactive'; // from your package
 import {Colors} from '@constants/colors';
+import window from '@constants/dimension';
 
 interface CustomInputProps {
   label?: string;
@@ -12,6 +13,8 @@ interface CustomInputProps {
   icon?: any;
   onFocus?: () => void; // Modal açma veya diğer işlemler için kullanılacak
   editable?: boolean; // Varsayılan olarak true olacak
+  row?: boolean;
+  style?: any;
 }
 
 const CustomInput = ({
@@ -22,6 +25,8 @@ const CustomInput = ({
   secureTextEntry,
   onFocus,
   icon,
+  row,
+  style,
   editable = true, // Varsayılan olarak true
 }: CustomInputProps) => {
   const handleIconPress = () => {
@@ -39,7 +44,13 @@ const CustomInput = ({
   return (
     <TouchableOpacity
       onPress={handleTouchablePress} // Sadece alan tıklamalarını işler
-      style={styles.container}>
+      style={[
+        styles.container,
+        {
+          flex: row ? 1 : undefined,
+          paddingVertical: row ? 10 : 0,
+        },
+      ]}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
         iconImageSource={icon}
@@ -47,7 +58,18 @@ const CustomInput = ({
         placeholder={placeholder}
         value={String(value)}
         editable={editable} // editable prop'u kontrol ediliyor
-        textInputStyle={{width: '100%'}}
+        textInputStyle={[
+          style,
+          {
+            fontWeight: '500',
+            height: 65,
+            width: row ? window.width / 2.6 : '100%',
+            borderColor: row ? 'transparent' : Colors.darkBlue,
+            backgroundColor: row ? 'transparent' : undefined,
+            borderRightWidth: 4,
+            // borderWidth: 0.8,
+          },
+        ]}
         mainColor={Colors.darkBlue}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -61,11 +83,14 @@ const CustomInput = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 15,
+    width: 'auto',
+    backgroundColor: 'white',
+    borderRadius: 10,
   },
   label: {
-    color: Colors.graniteBlack,
+    color: Colors.mediumGray,
     fontSize: 14,
+    marginLeft: 10,
     marginBottom: 5,
   },
 });

@@ -1,49 +1,52 @@
 import React, {useCallback, useRef, useState} from 'react';
-import {View, Text, Image, StyleSheet, Button, Alert} from 'react-native';
+import {View, Text, Image, StyleSheet} from 'react-native';
 import CustomInput from '@components/Input/CustomInput';
 import CustomButton from '@components/Button/CustomButton';
 import LocationModal from '@components/Modal/LocationModal';
 import {getLocationsFromAPI} from '../../api/api';
-import auth from '@react-native-firebase/auth';
-import {enforceDateFormat, formatDateInTurkish} from '@utils/DateUtils'; // Updated to include formatDateInTurkish
+// import auth from '@react-native-firebase/auth';
+import {formatDateInTurkish} from '@utils/DateUtils'; // Updated to include formatDateInTurkish
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import CountUser from '@components/Modal/CountUser';
 import window from '@constants/dimension';
+import {RowContainer} from '@components/RowContainer';
+import {useDispatch, useSelector} from 'react-redux';
 
-const SearchScreen = ({navigation}) => {
-  const [departure, setDeparture] = useState('');
-  const [arrival, setArrival] = useState('');
-  const [user, setUser] = useState(1);
-  const [locations, setLocations] = useState([]);
+import {
+  setDate,
+  setEndLocation,
+  setLocations,
+  setStartLocation,
+  setUser,
+} from '../../redux/slice/search';
+
+const SearchScreen = ({navigation}: {navigation: any}) => {
+  const dispatch = useDispatch();
+  const {startLocation, endLocation, date, user, locations} = useSelector(
+    (state: any) => state.search,
+  );
   const [modalVisible, setModalVisible] = useState(false);
-  const [birthDate, setBirthDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [manualDate, setManualDate] = useState(formatDateInTurkish(new Date())); // İlk başta bugünü Türkçe formatta gösteriyoruz
-
   const [focusedInput, setFocusedInput] = useState('');
   const refRBSheet = useRef<any>(null);
 
-  const signOut = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        Alert.alert('User signed out!');
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+  // const signOut = () => {
+  //   auth()
+  //     .signOut()
+  //     .then(() => {
+  //       Alert.alert('User signed out!');
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // };
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || birthDate;
+    console.log('aa', selectedDate);
+    const currentDate = selectedDate || new Date();
     setShowPicker(false);
-    setBirthDate(currentDate);
-    setManualDate(formatDateInTurkish(currentDate)); // Using Turkish date format
-  };
-
-  const handleManualDateChange = (text: string) => {
-    setManualDate(enforceDateFormat(text));
+    dispatch(setDate(formatDateInTurkish(currentDate))); // Redux'taki date güncelleniyor
   };
 
   const searchTravel = () => {
@@ -51,26 +54,34 @@ const SearchScreen = ({navigation}) => {
     navigation.navigate('TravelScreen');
   };
 
-  const getLocations = useCallback((query: string | number | boolean) => {
-    setLocations([]);
-    if (query) {
-      getLocationsFromAPI(query)
-        .then(data => {
-          setLocations(data);
-        })
-        .catch(() => {
-          // Handle error if needed
-        });
-    }
-  }, []);
+  const getLocations = useCallback(
+    (query: string | number | boolean) => {
+      setLocations([]);
+      if (query) {
+        getLocationsFromAPI(query)
+          .then(data => {
+            dispatch(setLocations(data));
+          })
+          .catch(() => {
+            // Handle error if needed
+          });
+      }
+    },
+    [dispatch],
+  );
 
   const handleLocationSelect = (value: string) => {
     if (focusedInput === 'departure') {
-      setDeparture(value);
+      dispatch(setStartLocation(value));
     } else if (focusedInput === 'arrival') {
-      setArrival(value);
+      dispatch(setEndLocation(value));
     }
     setModalVisible(false);
+  };
+
+  const handleUserChange = (newCount: number) => {
+    console.log(newCount);
+    dispatch(setUser(newCount)); // Redux'dan gelen action'ı kullanarak state'i güncelliyoruz
   };
 
   return (
@@ -85,56 +96,54 @@ const SearchScreen = ({navigation}) => {
       <View style={styles.inputContainer}>
         <CustomInput
           icon={require('@assets/png/rec.png')}
-          value={departure}
-          onChangeText={setDeparture}
+          value={startLocation}
+          onChangeText={value => dispatch(setStartLocation(value))}
           editable={false}
           placeholder="Kalkış yeri"
           onFocus={() => {
             setFocusedInput('departure');
             setModalVisible(true);
-            getLocations(departure);
+            getLocations(startLocation);
           }}
         />
 
-        <View style={styles.inputRow}>
-          <CustomInput
-            icon={require('@assets/png/rec.png')}
-            value={arrival}
-            editable={false}
-            onChangeText={setArrival}
-            placeholder="Varış yeri"
-            onFocus={() => {
-              setFocusedInput('arrival');
-              setModalVisible(true);
-              getLocations(arrival);
-            }}
-          />
-        </View>
+        <CustomInput
+          icon={require('@assets/png/rec.png')}
+          value={endLocation}
+          editable={false}
+          onChangeText={value => dispatch(setEndLocation(value))}
+          placeholder="Varış yeri"
+          onFocus={() => {
+            setFocusedInput('arrival');
+            setModalVisible(true);
+            getLocations(endLocation);
+          }}
+        />
 
-        <View style={styles.inputRow}>
+        <RowContainer>
           <CustomInput
+            style={{borderWidth: 0}}
             icon={require('@assets/png/calendar.png')}
-            placeholder="DD-MM-YYYY"
-            value={manualDate}
-            onFocus={() => setShowPicker(true)}
-            onChangeText={handleManualDateChange}
+            placeholder="Saat"
+            value={date}
+            row
+            onChangeText={text => dispatch(setDate(text))}
+            onFocus={() => setShowPicker(true)} // Date picker açılır
           />
-        </View>
-        <View style={styles.inputRow}>
           <CustomInput
             icon={require('@assets/png/user.png')}
             value={user}
+            row
             onChangeText={text => setUser(Number(text))}
             onFocus={() => refRBSheet.current.open()}
             placeholder="Kişi sayısı"
           />
-        </View>
-        <CustomButton label="Ara" onPress={searchTravel} />
+        </RowContainer>
 
         {showPicker && (
           <RNDateTimePicker
             testID="dateTimePicker"
-            value={birthDate}
+            value={new Date(date)} // Redux'tan alınan date
             mode="date"
             display="default"
             onChange={handleDateChange}
@@ -166,11 +175,17 @@ const SearchScreen = ({navigation}) => {
               backgroundColor: '#000',
             },
           }}>
-          <CountUser value={user} setValue={setUser} />
+          <CountUser
+            value={user}
+            onChange={handleUserChange} // Redux ile değeri güncelliyoruz
+            title="Kaç yolcu alacaksınız?"
+            minValue={1}
+            maxValue={4}
+          />
         </RBSheet>
-        <View style={{marginTop: 20}}>
-          <Button title="Çıkış Yap" onPress={signOut} />
-        </View>
+        <CustomButton label="Ara" onPress={searchTravel} />
+
+        {/* <Button title="dkf" onPress={signOut} /> */}
       </View>
     </View>
   );
@@ -194,34 +209,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageContainer: {
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   image: {
     width: '100%',
-    height: '70%',
+    height: window.height / 2.5,
   },
   inputContainer: {
     position: 'absolute',
     top: '40%',
+    height: window.height,
     alignSelf: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 40,
     paddingVertical: 20,
     paddingHorizontal: 30,
-    width: '95%',
+    gap: 10,
     backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   inputRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     marginBottom: 15,
   },
   icon: {

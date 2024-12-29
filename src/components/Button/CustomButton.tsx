@@ -18,7 +18,7 @@ interface CustomButtonProps {
 
 const CustomButton = ({label, onPress, style}: CustomButtonProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <TouchableOpacity
         onPress={onPress}
         style={[styles.buttonContainer, style]}>
@@ -33,8 +33,10 @@ export default CustomButton;
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    justifyContent: 'flex-end',
-    width: '100%',
+    // justifyContent: 'flex-end',
+    // alignItems: 'center',
+    // width: '95%',
+    marginTop: 10,
   },
   buttonContainer: {
     backgroundColor: Colors.darkBlue,
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    color: Colors.lightGray,
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },

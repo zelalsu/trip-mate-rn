@@ -2,6 +2,8 @@ import {View} from 'react-native';
 import React from 'react';
 import Navigation from './src/navigation';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {Provider} from 'react-redux';
+import {store} from './src/redux/store';
 
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
@@ -14,11 +16,13 @@ GoogleSignin.configure({
 
 const App = () => {
   return (
-    <SafeAreaProvider>
-      <View style={{flex: 1}}>
-        <Navigation />
-      </View>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <View style={{flex: 1}}>
+          <Navigation />
+        </View>
+      </SafeAreaProvider>
+    </Provider>
   );
 };
 

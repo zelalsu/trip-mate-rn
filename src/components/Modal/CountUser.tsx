@@ -1,25 +1,36 @@
-import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 import CustomButton from '@components/Button/CustomButton';
 
-const CountUser = ({
+interface CountUserProps {
+  value: number; // Kullanıcı veya koltuk sayısı
+  onChange: (newValue: number) => void; // Değer değişimi için callback
+  title: string; // Dinamik başlık
+  minValue?: number; // Minimum değer (varsayılan 1)
+  maxValue?: number; // Maksimum değer (opsiyonel)
+}
+
+const CountUser: React.FC<CountUserProps> = ({
   value,
-  setValue,
-}: {
-  value: number;
-  setValue: React.Dispatch<React.SetStateAction<number>>;
+  onChange,
+  title,
+  minValue = 1, // Varsayılan minimum değer
+  maxValue, // Maksimum değer (opsiyonel)
 }) => {
   const handlePress = (type: 'decrease' | 'increase') => {
-    if (type === 'decrease' && value > 1) {
-      setValue(value - 1);
-    } else if (type === 'increase') {
-      setValue(value + 1);
+    if (type === 'decrease' && value > minValue) {
+      onChange(value - 1);
+    } else if (
+      type === 'increase' &&
+      (maxValue === undefined || value < maxValue)
+    ) {
+      onChange(value + 1);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Reverze etmek istediğin koltuk sayısı</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.buttonContainer}>
         <CustomButton
           style={styles.button}
@@ -40,28 +51,27 @@ const CountUser = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', // Konteyneri dikeyde ortalamak için
-    alignItems: 'center', // Konteyneri yatayda ortalamak için
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center', // Başlık metnini ortalamak için
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    justifyContent: 'center', // Düğmelerin ortalanmasını sağlamak için
+    justifyContent: 'center',
   },
   button: {
     marginHorizontal: 20,
-    width: 50, // Sabit genişlik
+    width: 50,
   },
   text: {
     fontSize: 24,
-    textAlign: 'center', // Metni yatayda ortalamak için
+    textAlign: 'center',
     fontWeight: 'bold',
     color: '#000',
   },
